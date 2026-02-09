@@ -177,10 +177,10 @@ body{
 }
 /* almost full screen but keeps background visible */
 .letter.big{
-  transform:translate(-50%,-50%) scale(1.15);
-  width:84vw;
-  height:84vh;
-  padding:40px;
+  transform:translate(-50%,-50%) scale(1.05); /* slightly bigger */
+  width:56vw;
+  height:56vh;
+  padding:28px;
 }
 
 /* ===== CARD ===== */
@@ -252,6 +252,13 @@ button{
 @keyframes spark{
   to{ transform:translate(var(--x),var(--y)); opacity:0; }
 }
+
+#front {
+  opacity: 0;
+  transform: scale(0.9); /* smaller at start */
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
 </style>
 </head>
 <body>
@@ -279,29 +286,41 @@ for(let i=0;i<18;i++){
   <div class="letter" id="letter">
     <div class="card" id="card">
 
-      <!-- FRONT -->
-      <div class="front">
-        <h2>Will you be my Valentine? 💗</h2>
+     <!-- FRONT -->
+<div class="front" id="front">
+<h2>Will you be my Valentine? 💗</h2>
+<div class="photo-row">
+<img src="your-photo1.jpg" style="width:220px; height:220px; border-radius:16px; border:3px solid #e8c27a;">
+<img src="your-photo2.jpg" style="width:220px; height:220px; border-radius:16px; border:3px solid #e8c27a;">
 
-        <div class="photo-row">
-          <img src="your-photo1.jpg">
-          <img src="your-photo2.jpg">
-        </div>
+</div>
+<div class="buttons">
+  <button class="yes" id="yes">Yes</button>
+  <button class="no" id="no">No</button>
+</div>
+</div>
 
-        <div class="buttons">
-          <button class="yes" id="yes">Yes</button>
-          <button class="no" id="no">No</button>
-        </div>
-      </div>
+<!-- BACK -->
+<div class="back">
+  <h2>Happy Valentine’s Day babyyy!! 💗</h2>
 
-      <!-- BACK -->
-      <div class="back">
-        <h2>Happy Valentine’s Day babyyy!! 💗</h2>
-        <div class="photo-row">
-          <img src="your-photo3.jpg">
-          <img src="your-photo4.jpg">
-        </div>
-        <p>
+  <!-- Step 1: First big image + Click Me button -->
+  <div id="step1" style="text-align:center;">
+    <img src="your-photo5.jpg" style="width:300px; height:300px; border-radius:16px; border:3px solid #e8c27a;">
+    <div style="margin-top:16px;">
+      <button id="clickMe" style="padding:12px 20px; font-size:18px; border-radius:10px; border:2px solid #e8c27a; cursor:pointer;">
+        Click Me
+      </button>
+    </div>
+  </div>
+
+  <!-- Step 2: Original content (2 images + letter), hidden at first -->
+  <div id="step2" style="display:none;">
+    <div class="photo-row">
+      <img src="your-photo3.jpg">
+      <img src="your-photo4.jpg">
+    </div>
+    <p>
           <!-- paste your full message here -->
           Happy Valentine’s Day babyyy!! I just want you to know how incredibly special you are to me and how thankful I am that you’re in my life, because you bring so much happiness, warmth, and light into my days. Every time I think about you, I smile without even noticing, and every moment I spend with you becomes one of my favorite memories. You’re so amazing in every way, your smile, your laugh, your eyes, your personality, your little habits, everything about you is just so lovable and beautiful to me. Being with you feels so comforting, like pahinga and tahanan at the same time, and I treasure the way we talk, laugh, and understand each other. I love spending time with you even in the simplest ways, because nothing feels boring when it’s with you. And no matter how much we argue sometimes or misunderstand each other, I want you to know that I don’t run away from hard moments, I choose to stay, to listen, to fix things, and to choose you again and again, because you are important to me and I see you as part of my future. Kahit may tampuhan, I still choose us, I still choose to care, I still choose to work things out, because what we have is worth it and you are worth it. I believe that real love is not just about sweet moments but also about patience, forgiveness, and choosing each other even after disagreements, and that’s what I want to keep doing with you. Thank you for being patient with me when I’m makulit and clingy, it’s just my way of showing how much I care. Thank you for supporting me, encouraging me, and helping me become a better person little by little. You inspire me to grow, to try harder, and to keep moving forward. I hope you always remember how valued and appreciated you are, not just today but every day. You deserve kindness, happiness, success, and all the good things this world can offer. I’m always here to support you, cheer for you, and believe in you. You’re truly precious to me, parang icing sa ibabaw ng cupcake ng araw ko, and I will keep appreciating you, respecting you, and choosing you with a full heart. I love you so much, and I hope this Valentine’s Day makes you feel extra loved, extra appreciated, and extra special, because you really are.
 
@@ -313,40 +332,86 @@ for(let i=0;i<18;i++){
 </div>
 
 <script>
-const env=document.getElementById("env");
-const letter=document.getElementById("letter");
-const yes=document.getElementById("yes");
-const no=document.getElementById("no");
-const card=document.getElementById("card");
+const env = document.getElementById("env");
+const letter = document.getElementById("letter");
+const yes = document.getElementById("yes");
+const no = document.getElementById("no");
 
 let yesScale = 1;
+let noOffset = 0;
 
-env.onclick=()=>{
+yes.onclick = () => {
+  // increase YES button scale
+  yesScale += 0.2;
+  yes.style.transform = `scale(${yesScale})`;
+
+  // push NO button to the right
+  noOffset += 80; // pixels per click
+  no.style.left = noOffset + "px";
+};
+
+const card = document.getElementById("card");
+
+const frontPhotos = document.getElementById("front-photos");
+const frontButtons = document.getElementById("front-buttons");
+const back = document.getElementById("back");
+
+
+env.onclick = () => {
   env.classList.add("open");
   sparkleBurst();
-  setTimeout(()=>letter.classList.add("big"),900);
+
+  // Make letter bigger
+  setTimeout(() => {
+    letter.classList.add("big");
+
+    // Show front content after letter is fully open
+    setTimeout(() => {
+      document.getElementById("front").style.opacity = 1;
+    }, 600); // adjust 600ms to match your CSS transition
+  }, 900);
 };
 
-yes.onclick=()=> card.classList.add("flip");
 
-no.onclick=()=>{
+// YES button: first click shows 1 image + "Click Me" button
+yes.onclick = () => {
+  // Step 1: Show flip effect to first big image
+  card.classList.add("flip");
+
+  // Hide Step 2 content just in case
+  document.getElementById("step2").style.display = "none";
+  // Show Step 1 content
+  document.getElementById("step1").style.display = "block";
+};
+
+// Handle Click Me button
+document.getElementById("clickMe").onclick = () => {
+  // Hide Step 1 (big image + button)
+  document.getElementById("step1").style.display = "none";
+  // Show Step 2 (2 images + letter)
+  document.getElementById("step2").style.display = "block";
+};
+
+// NO button: playful scaling effect
+no.onclick = () => {
   yesScale += 0.35;
-  yes.style.transform=`scale(${yesScale})`;
+  yes.style.transform = `scale(${yesScale})`;
 };
 
-/* sparkle burst */
-function sparkleBurst(){
-  for(let i=0;i<30;i++){
-    const s=document.createElement("div");
-    s.className="sparkle";
-    s.style.left="50vw";
-    s.style.top="50vh";
-    s.style.setProperty("--x",(Math.random()*400-200)+"px");
-    s.style.setProperty("--y",(Math.random()*300-150)+"px");
+// sparkle burst
+function sparkleBurst() {
+  for (let i = 0; i < 30; i++) {
+    const s = document.createElement("div");
+    s.className = "sparkle";
+    s.style.left = "50vw";
+    s.style.top = "50vh";
+    s.style.setProperty("--x", Math.random() * 400 - 200 + "px");
+    s.style.setProperty("--y", Math.random() * 300 - 150 + "px");
     document.body.appendChild(s);
-    setTimeout(()=>s.remove(),1000);
+    setTimeout(() => s.remove(), 1000);
   }
 }
+
 </script>
 
 </body>
