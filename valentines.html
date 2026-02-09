@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Valentine Card</title>
+
+<style>
+body{
+  margin:0;
+  height:100vh;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  font-family: Georgia, serif;
+  overflow:hidden;
+  background:
+    radial-gradient(circle at 20% 20%, #fff0f6, transparent 40%),
+    radial-gradient(circle at 80% 30%, #ffe4ec, transparent 45%),
+    linear-gradient(135deg,#fff6f9,#ffeef4);
+}
+
+/* ===== FLOATING HEARTS ===== */
+.heart{
+  position:fixed;
+  width:18px;height:18px;
+  background:#ffb6c9;
+  transform:rotate(45deg);
+  opacity:.7;          /* slightly more visible */
+  animation:floatUp linear infinite;
+  animation-delay:0s;   /* start immediately */
+}
+.heart:before,.heart:after{
+  content:"";
+  position:absolute;
+  width:18px;height:18px;
+  background:#ffb6c9;
+  border-radius:50%;
+}
+.heart:before{left:-9px;}
+.heart:after{top:-9px;}
+@keyframes floatUp{
+  from{transform:translateY(100vh) rotate(45deg);}
+  to{transform:translateY(-20vh) rotate(45deg);}
+}
+
+/* ===== LETTER DESIGN ===== */
+.letter{
+  position:absolute;
+  width:460px;
+  height:300px;
+  left:50%;
+  top:50%;
+  background:linear-gradient(180deg, #fffaf0, #fff0f5); /* soft paper gradient */
+  border-radius:12px;
+  padding:26px;
+  box-sizing:border-box;
+  box-shadow:0 18px 40px rgba(0,0,0,.18);
+  opacity:0;
+  transform:translate(-50%,0) scale(.92);
+  transition:all 1s ease;
+  z-index:2;
+  border:1px dashed #e8c27a; /* subtle letter border */
+  background-image:
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 20px,
+      rgba(255,192,203,0.1) 20px,
+      rgba(255,192,203,0.1) 21px
+    ); /* lined letter effect */
+}
+.letter::before{
+  content:"";
+  position:absolute;
+  width:60px;
+  height:20px;
+  background:#ffd6e2;
+  border-radius:0 0 10px 10px;
+  top:0;
+  left:50%;
+  transform:translateX(-50%);
+  box-shadow: inset 0 2px 4px rgba(0,0,0,.1);
+} /* folded top effect */
+.open .letter{
+  opacity:1;
+  transform:translate(-50%,-240px) scale(1);
+  z-index:6;
+}
+
+/* ===== BOWS ===== */
+.bow{
+  position:fixed;
+  width:40px;height:26px;
+  animation:bowFloat 6s ease-in-out infinite;
+}
+.bow:before,.bow:after{
+  content:"";
+  position:absolute;
+  width:18px;height:18px;
+  background:#ffc0d6;
+  border-radius:50% 50% 50% 0;
+}
+.bow:before{ left:0; transform:rotate(-45deg); }
+.bow:after{ right:0; transform:rotate(135deg); }
+@keyframes bowFloat{
+  0%,100%{ transform:translateY(0); }
+  50%{ transform:translateY(-12px); }
+}
+
+/* ===== ENVELOPE ===== */
+.envelope{
+  width:520px;
+  height:340px;
+  position:relative;
+  cursor:pointer;
+}
+.env-base{
+  position:absolute;
+  inset:0;
+  background:white;
+  border-radius:18px;
+  border:3px solid #ffd6e2;
+  box-shadow:0 18px 40px rgba(0,0,0,.15);
+  z-index:1;
+}
+.env-base::after{
+  content:"";
+  position:absolute;
+  inset:12px;
+  border:2px solid #e8c27a;
+  border-radius:14px;
+}
+.flap{
+  position:absolute;
+  width:100%;
+  height:170px;
+  background:#ffe4ec;
+  clip-path:polygon(0 0,100% 0,50% 100%);
+  transform-origin:top;
+  transition:transform .8s ease;
+  z-index:3;
+}
+.open .flap{ transform:rotateX(180deg); }
+.seal{
+  position:absolute;
+  width:60px;height:60px;
+  border-radius:50%;
+  background:#ff9fba;
+  border:3px solid #e8c27a;
+  top:130px; left:50%;
+  transform:translateX(-50%);
+  z-index:4;
+  box-shadow: inset 0 0 10px rgba(0,0,0,.25);
+}
+
+/* ===== LETTER ===== */
+.letter{
+  position:absolute;
+  width:460px;
+  height:300px;
+  left:50%;
+  top:50%;
+  background:white;
+  border-radius:18px;
+  padding:26px;
+  box-sizing:border-box;
+  box-shadow:0 18px 40px rgba(0,0,0,.18);
+  opacity:0;
+  transform:translate(-50%,0) scale(.92);
+  transition:all 1s ease;
+  z-index:2;
+}
+.open .letter{
+  opacity:1;
+  transform:translate(-50%,-240px) scale(1);
+  z-index:6;
+}
+/* almost full screen but keeps background visible */
+.letter.big{
+  transform:translate(-50%,-50%) scale(1.15);
+  width:84vw;
+  height:84vh;
+  padding:40px;
+}
+
+/* ===== CARD ===== */
+.card{
+  width:100%;
+  height:100%;
+  transform-style:preserve-3d;
+  transition:transform .9s;
+  position:relative;
+}
+.card.flip{ transform:rotateY(180deg); }
+.front,.back{
+  position:absolute;
+  inset:0;
+  backface-visibility:hidden;
+}
+.back{
+  transform:rotateY(180deg);
+  overflow:auto;
+  padding-right:10px;
+}
+
+/* ===== TEXT ===== */
+h2{ text-align:center; color:#d46a92; }
+p{ font-size:18px; line-height:1.6; color:#555; }
+
+/* ===== PHOTOS ===== */
+.photo-row{
+  display:flex;
+  gap:12px;
+  justify-content:center;
+  margin:15px 0;
+}
+.photo-row img{
+  width:150px;height:150px;
+  object-fit:cover;
+  border-radius:16px;
+  border:3px solid #e8c27a;
+}
+
+/* ===== BUTTONS ===== */
+.buttons{
+  margin-top:22px;
+  display:flex;
+  justify-content:center;
+  gap:16px;
+}
+button{
+  padding:14px 22px;
+  border-radius:14px;
+  border:2px solid #e8c27a;
+  background:#fff0f5;
+  font-size:20px;
+  cursor:pointer;
+  transition:.2s;
+}
+.yes{ background:#ffb6c9; }
+.no{ background:#f3f3f3; }
+
+/* ===== SPARKLES ===== */
+.sparkle{
+  position:fixed;
+  width:8px;height:8px;
+  background:gold;
+  border-radius:50%;
+  pointer-events:none;
+  animation:spark 1s ease-out forwards;
+}
+@keyframes spark{
+  to{ transform:translate(var(--x),var(--y)); opacity:0; }
+}
+</style>
+</head>
+<body>
+
+<!-- bows -->
+<div class="bow" style="top:8%;left:10%"></div>
+<div class="bow" style="top:82%;left:85%"></div>
+
+<!-- floating hearts -->
+<script>
+for(let i=0;i<18;i++){
+  const h=document.createElement("div");
+  h.className="heart";
+  h.style.left=Math.random()*100+"vw";
+  h.style.animationDuration=(6+Math.random()*6)+"s";
+  document.body.appendChild(h);
+}
+</script>
+
+<div class="envelope" id="env">
+  <div class="env-base"></div>
+  <div class="flap"></div>
+  <div class="seal"></div>
+
+  <div class="letter" id="letter">
+    <div class="card" id="card">
+
+      <!-- FRONT -->
+      <div class="front">
+        <h2>Will you be my Valentine? 💗</h2>
+
+        <div class="photo-row">
+          <img src="your-photo1.jpg">
+          <img src="your-photo2.jpg">
+        </div>
+
+        <div class="buttons">
+          <button class="yes" id="yes">Yes</button>
+          <button class="no" id="no">No</button>
+        </div>
+      </div>
+
+      <!-- BACK -->
+      <div class="back">
+        <h2>Happy Valentine’s Day babyyy!! 💗</h2>
+        <div class="photo-row">
+          <img src="your-photo3.jpg">
+          <img src="your-photo4.jpg">
+        </div>
+        <p>
+          <!-- paste your full message here -->
+          Happy Valentine’s Day babyyy!! I just want you to know how incredibly special you are to me and how thankful I am that you’re in my life, because you bring so much happiness, warmth, and light into my days. Every time I think about you, I smile without even noticing, and every moment I spend with you becomes one of my favorite memories. You’re so amazing in every way, your smile, your laugh, your eyes, your personality, your little habits, everything about you is just so lovable and beautiful to me. Being with you feels so comforting, like pahinga and tahanan at the same time, and I treasure the way we talk, laugh, and understand each other. I love spending time with you even in the simplest ways, because nothing feels boring when it’s with you. And no matter how much we argue sometimes or misunderstand each other, I want you to know that I don’t run away from hard moments, I choose to stay, to listen, to fix things, and to choose you again and again, because you are important to me and I see you as part of my future. Kahit may tampuhan, I still choose us, I still choose to care, I still choose to work things out, because what we have is worth it and you are worth it. I believe that real love is not just about sweet moments but also about patience, forgiveness, and choosing each other even after disagreements, and that’s what I want to keep doing with you. Thank you for being patient with me when I’m makulit and clingy, it’s just my way of showing how much I care. Thank you for supporting me, encouraging me, and helping me become a better person little by little. You inspire me to grow, to try harder, and to keep moving forward. I hope you always remember how valued and appreciated you are, not just today but every day. You deserve kindness, happiness, success, and all the good things this world can offer. I’m always here to support you, cheer for you, and believe in you. You’re truly precious to me, parang icing sa ibabaw ng cupcake ng araw ko, and I will keep appreciating you, respecting you, and choosing you with a full heart. I love you so much, and I hope this Valentine’s Day makes you feel extra loved, extra appreciated, and extra special, because you really are.
+
+        </p>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+const env=document.getElementById("env");
+const letter=document.getElementById("letter");
+const yes=document.getElementById("yes");
+const no=document.getElementById("no");
+const card=document.getElementById("card");
+
+let yesScale = 1;
+
+env.onclick=()=>{
+  env.classList.add("open");
+  sparkleBurst();
+  setTimeout(()=>letter.classList.add("big"),900);
+};
+
+yes.onclick=()=> card.classList.add("flip");
+
+no.onclick=()=>{
+  yesScale += 0.35;
+  yes.style.transform=`scale(${yesScale})`;
+};
+
+/* sparkle burst */
+function sparkleBurst(){
+  for(let i=0;i<30;i++){
+    const s=document.createElement("div");
+    s.className="sparkle";
+    s.style.left="50vw";
+    s.style.top="50vh";
+    s.style.setProperty("--x",(Math.random()*400-200)+"px");
+    s.style.setProperty("--y",(Math.random()*300-150)+"px");
+    document.body.appendChild(s);
+    setTimeout(()=>s.remove(),1000);
+  }
+}
+</script>
+
+</body>
+</html>
